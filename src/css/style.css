@@ -15,10 +15,27 @@
     width: 3.5rem;
     height: 4.5rem;
     margin: 1px;
+    
+}
+
+.card-chosen{
+    background-color: burlywood;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    border-radius: 9px;
+    border: 1px solid black;
+    width: 4.5rem;
+    height: 6.5rem;
+    margin: 1px;
+    
 }
 
 .my-deck{
     display:flex;
+    margin-top: 20px;
+    padding:20px ;
 }
 
 .main-deck{
