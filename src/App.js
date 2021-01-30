@@ -2,13 +2,13 @@
 import "./css/style.css";
 import Card from './components/card'
 import { Component, useState, useEffect } from "react";
-import Player from "./components/player";
+import background from "C:/Users/mamis/Projects/president/president/src/assets/table-background.jpg";
 
 function App() {
 
 
   const deck = [
-    { number: '1', suit: 'hearts' },
+    { number: '14', suit: 'hearts' },
     { number: '2', suit: 'hearts' },
     { number: '3', suit: 'hearts' },
     { number: '4', suit: 'hearts' },
@@ -21,7 +21,7 @@ function App() {
     { number: '11', suit: 'hearts' },
     { number: '12', suit: 'hearts' },
     { number: '13', suit: 'hearts' },
-    { number: '1', suit: 'clubs' },
+    { number: '14', suit: 'clubs' },
     { number: '2', suit: 'clubs' },
     { number: '3', suit: 'clubs' },
     { number: '4', suit: 'clubs' },
@@ -34,7 +34,7 @@ function App() {
     { number: '11', suit: 'clubs' },
     { number: '12', suit: 'clubs' },
     { number: '13', suit: 'clubs' },
-    { number: '1', suit: 'diamonds' },
+    { number: '14', suit: 'diamonds' },
     { number: '2', suit: 'diamonds' },
     { number: '3', suit: 'diamonds' },
     { number: '4', suit: 'diamonds' },
@@ -47,7 +47,7 @@ function App() {
     { number: '11', suit: 'diamonds' },
     { number: '12', suit: 'diamonds' },
     { number: '13', suit: 'diamonds' },
-    { number: '1', suit: 'spades' },
+    { number: '14', suit: 'spades' },
     { number: '2', suit: 'spades' },
     { number: '3', suit: 'spades' },
     { number: '4', suit: 'spades' },
@@ -126,10 +126,11 @@ function App() {
 
 
   function deselectDeck() {
-    var x = document.getElementsByClassName(cardClass);
+    var x = document.getElementsByClassName("my-deck");
+    var y =x[0].children;
     var i;
-    for (i = 0; i < x.length; i++) {
-      x[i].style.backgroundColor = 'burlywood';
+    for (i = 0; i < y.length; i++) {
+     y[i].style.opacity = 1;
     }
   }
 
@@ -185,22 +186,22 @@ function App() {
 
     if (turn === 0) {
 
-      var x = document.getElementsByClassName(cardClass);
-      let number1 = x[i].childNodes[0].innerText;
-      let suit1 = x[i].childNodes[2].innerText;
-      if (x[i].style.backgroundColor !== 'orange') {
-
+      var x = document.getElementsByClassName(i);
+      let number1 = i.split('-')[2];
+      let suit1 = i.split('-')[1];
+      if (x[0].style.opacity !== '0.5') {
+        
         if (tempCenterDeck.length === 0) {
-          x[i].style.backgroundColor = 'orange';
           tempCenterDeck[0] = ({ number: number1, suit: suit1 });
+          x[0].style.opacity = 0.5;
         }
         else if (tempCenterDeck[0].number === number1) {
-          x[i].style.backgroundColor = 'orange';
           tempCenterDeck.push({ number: number1, suit: suit1 });
+          x[0].style.opacity = 0.5;
         }
       }
       else {
-        x[i].style.backgroundColor = 'burlywood';
+        x[0].style.opacity = 1;
         let index = tempCenterDeck.findIndex(card => card.number === number1 && card.suit === suit1);
         tempCenterDeck.splice(index, 1);
         if (tempCenterDeck.length == 0)
@@ -279,24 +280,28 @@ function App() {
 
   function checkWinners()
   {
-    var i =0;
+    var count =0;
     var tempWinners = [];
     var player;
     for(player of state.players){
       if(player.deck.length === 0)
+      {
         tempWinners.push(true);
+        count++;
+      }
       else tempWinners.push(false);
-      i++;
+      
     }
 
     SetWinners(tempWinners);
+    return count;
   }
 
 
   function handleTurn(skip, pass) {
 
   
-    checkWinners();
+    var numWinners = checkWinners();
     var tempPassTable = passTable;
     if(pass)
     {
@@ -304,12 +309,13 @@ function App() {
       SetPassTable(tempPassTable);
     }
     
-    if (countpass() === 3) {
+    if (countpass() === 3 - numWinners) {
       setState({ players: state.players, centerDeck: [] });
       setTurn(passTable.findIndex(item => item === true));
       SetPassTable([false, false, false, false]);
     }
 
+    
     tempTurn = (turn + 1 + skip) % 4;
     skip = 0;
 
@@ -333,38 +339,45 @@ function App() {
 
 
   return (
-    <div>
-      <h1>player {turn + 1} turn</h1>
-      <button onClick={() => { handleTurn(0, true) }}>pass</button>
-      <button onClick={() => { clickPlay()}}>play</button>
-      {playing === false ?
-        <button onClick={() => { dealCards()}}>deal cards!  </button>
-        : null
-      }
+    <div className="myBody">
 
+      <h1>PRESIDENT</h1>
+        <div className="playingButtons">
+        <button onClick={() => { handleTurn(0, true) }}>PASS</button>
+        <button onClick={() => { clickPlay()}}>PLAY!</button>
+        {playing === false ?
+          <button onClick={() => { dealCards()}}>DEAL CARDS</button>
+          : null
+        }
+      </div>
+      
+      
       {playing === true ?
         <div className="my-deck" >
           {state.players[0].deck.map((item, i) => {
-            return <Card class={cardClass} key={i} id={`${i}`} number={item.number} suit={item.suit} onClick={() => cardClick(i)}></Card>
+            return <Card class={`card-${item.suit}-${item.number}`} key={i} id={`${i}`} number={item.number} suit={item.suit} onClick={() => cardClick(`card-${item.suit}-${item.number}`)}></Card>
           })}
 
         </div>
         : null
       }
+
       <br></br>
+
       {state.centerDeck.length > 0 ?
         <div className="main-deck">
           {
             state.centerDeck.map((item, i) => {
-              return <Card class={"card"} number={item.number} key={i} suit={item.suit}></Card>
+              return <Card class={`card-${item.suit}-${item.number}`} number={item.number} key={i} suit={item.suit}></Card>
             })
           }
 
         </div>
         : null
       }
-      {
-        turn > 0 ?
+
+      
+       { turn > 0 ?
           <div>
             <button onClick={() => {enemyPlay()}}>player {turn + 1} play!  </button>
           </div>
